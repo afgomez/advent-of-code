@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["year_2015"]
+members = ["aoc_tools", "year_2015"]
 
 
 [workspace.package]
@@ -8,3 +8,7 @@ authors = ["Alejandro Fernandez <antarticonorte@gmail.com>"]
 license = "MIT"
 edition = "2024"
 version = "0.1.0"
+publish = false
+
+[workspace.dependencies]
+aoc_tools = { path = 'aoc_tools' }
