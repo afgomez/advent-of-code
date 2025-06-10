@@ -1,3 +1,5 @@
+mod day01;
+
 fn main() {
     // Read the first argument and parse it as a number
     let number = std::env::args()
@@ -8,6 +10,7 @@ fn main() {
         .expect("The provided argument is not a valid number");
 
     match number {
+        1 => day01::run(),
         _ => println!("No solution found"),
     }
 }
