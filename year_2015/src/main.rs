@@ -1,4 +1,5 @@
 mod day01;
+mod day02;
 
 fn main() {
     // Read the first argument and parse it as a number
@@ -11,6 +12,7 @@ fn main() {
 
     match number {
         1 => day01::run(),
+        2 => day02::run(),
         _ => println!("No solution found"),
     }
 }
