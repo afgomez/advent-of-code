@@ -7,3 +7,4 @@ version.workspace = true
 
 [dependencies]
 aoc_tools.workspace = true
+md5 = "0.7.0"
