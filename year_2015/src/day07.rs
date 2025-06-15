@@ -56,34 +56,22 @@ enum Instruction {
 
 impl From<&str> for Instruction {
     fn from(input: &str) -> Self {
-        let mut tokens = input.split_whitespace();
+        let tokens = input.split_whitespace().collect::<Vec<&str>>();
 
-        match tokens.next() {
-            Some("NOT") => {
-                let input = tokens.next().expect("Parse error");
-                Instruction::Not(Input::from(input))
+        match tokens.as_slice() {
+            [input] => Instruction::Set(Input::from(*input)),
+            ["NOT", input] => Instruction::Not(Input::from(*input)),
+            [lhs, "AND", rhs] => Instruction::And(Input::from(*lhs), Input::from(*rhs)),
+            [lhs, "OR", rhs] => Instruction::Or(Input::from(*lhs), Input::from(*rhs)),
+            [lhs, "LSHIFT", rhs] => {
+                Instruction::LShift(Input::from(*lhs), rhs.parse().expect("Parse error"))
             }
-            Some(input) => {
-                let lhs = Input::from(input);
-                let operation = tokens.next();
-                let rhs = tokens.next();
 
-                if operation.is_none() && rhs.is_none() {
-                    return Instruction::Set(lhs);
-                }
-
-                let operation = operation.expect("Parse error");
-                let rhs = rhs.expect("Parse error");
-
-                match operation {
-                    "AND" => Instruction::And(lhs, Input::from(rhs)),
-                    "OR" => Instruction::Or(lhs, Input::from(rhs)),
-                    "LSHIFT" => Instruction::LShift(lhs, rhs.parse().expect("Parse error")),
-                    "RSHIFT" => Instruction::RShift(lhs, rhs.parse().expect("Parse error")),
-                    _ => panic!("Parse error"),
-                }
+            [lhs, "RSHIFT", rhs] => {
+                Instruction::RShift(Input::from(*lhs), rhs.parse().expect("Parse error"))
             }
-            None => panic!("Parser error"),
+
+            _ => panic!("Parse error"),
         }
     }
 }
@@ -124,12 +112,12 @@ impl Circuit {
     fn walk(&mut self, wire: &str) -> u16 {
         if let Some(instruction) = self.connections.get(wire) {
             let value = match instruction.clone() {
-                Instruction::Set(input) => self.read_input(&input),
-                Instruction::Not(input) => !self.read_input(&input),
-                Instruction::And(left, right) => self.read_input(&left) & self.read_input(&right),
-                Instruction::Or(left, right) => self.read_input(&left) | self.read_input(&right),
-                Instruction::LShift(left, right) => self.read_input(&left) << right,
-                Instruction::RShift(left, right) => self.read_input(&left) >> right,
+                Instruction::Set(input) => self.read_input(input),
+                Instruction::Not(input) => !self.read_input(input),
+                Instruction::And(left, right) => self.read_input(left) & self.read_input(right),
+                Instruction::Or(left, right) => self.read_input(left) | self.read_input(right),
+                Instruction::LShift(left, right) => self.read_input(left) << right,
+                Instruction::RShift(left, right) => self.read_input(left) >> right,
             };
 
             self.cache.insert(wire.to_string(), value);
@@ -139,10 +127,10 @@ impl Circuit {
         }
     }
 
-    fn read_input(&mut self, input: &Input) -> u16 {
+    fn read_input(&mut self, input: Input) -> u16 {
         match input {
-            Input::Signal(signal) => *signal,
-            Input::Wire(wire) => self.measure(wire),
+            Input::Signal(signal) => signal,
+            Input::Wire(wire) => self.measure(&wire),
         }
     }
 }
