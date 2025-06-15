@@ -3,6 +3,7 @@ mod day02;
 mod day03;
 mod day04;
 mod day05;
+mod day06;
 
 fn main() {
     // Read the first argument and parse it as a number
@@ -19,6 +20,7 @@ fn main() {
         3 => day03::run(),
         4 => day04::run(),
         5 => day05::run(),
+        6 => day06::run(),
         _ => println!("No solution found"),
     }
 }
