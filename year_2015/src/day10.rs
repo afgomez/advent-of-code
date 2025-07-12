@@ -24,24 +24,23 @@ fn part2() -> usize {
 }
 
 fn look_and_say(input: &str) -> String {
-    let mut output = String::new();
-    let mut cursor = 0;
+    let mut result = String::new();
+    let mut chars = input.chars().peekable();
 
-    let chars: Vec<char> = input.chars().collect();
+    while let Some(current_char) = chars.next() {
+        let mut count = 1;
 
-    while cursor < chars.len() {
-        let c = chars.get(cursor).unwrap();
-        cursor += 1;
-        let mut char_count = 1;
-        while chars.get(cursor).is_some_and(|next| next == c) {
-            cursor += 1;
-            char_count += 1;
+        // Count consecutive identical characters
+        while chars.peek() == Some(&current_char) {
+            chars.next();
+            count += 1;
         }
 
-        output.push_str(format!("{}{}", char_count, c).as_str());
+        // Append count and character to result
+        result.push_str(&format!("{}{}", count, current_char));
     }
 
-    output
+    result
 }
 
 #[cfg(test)]
